@@ -322,6 +322,9 @@
 				<h1 >Calendrier des Formations</h1>
 			</div>
 		</header>
+			<!-- Scripts Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
         
         <div class="calendar-header">
             <div class="month-navigation">
@@ -431,6 +434,7 @@ const firebaseConfig = {
 let currentDate = new Date();
 let events = [];
 let selectedEvent = null;
+let db; // Déclarer db comme variable globale
 
 // Propriétaires disponibles
 const owners = {
@@ -440,31 +444,43 @@ const owners = {
     4: { name: "Amor SAHLI", color: "#f39c12" }
 };
 
-// Initialisation Firebase
-try {
-    firebase.initializeApp(firebaseConfig);
-} catch (error) {
-    console.log("Firebase déjà initialisé");
-}
-const db = firebase.firestore();
-
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
-    loadEventsFromFirebase();
+    // Initialiser Firebase
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        console.log("Firebase initialisé avec succès");
+        loadEventsFromFirebase();
+    } catch (error) {
+        console.error("Erreur initialisation Firebase:", error);
+        alert("Erreur de connexion à Firebase. Vérifiez la console.");
+    }
+    
     setupEventListeners();
     populateYearSelect();
 });
 
 // Charger les événements depuis Firebase
 function loadEventsFromFirebase() {
+    if (!db) {
+        console.error("Firebase non initialisé");
+        return;
+    }
+    
     db.collection("formations").get().then((querySnapshot) => {
         events = [];
         querySnapshot.forEach((doc) => {
+            const data = doc.data();
             events.push({ 
                 id: doc.id, 
-                ...doc.data() 
+                title: data.title,
+                start: data.start,
+                end: data.end,
+                owner: data.owner
             });
         });
+        console.log(`${events.length} formations chargées`);
         renderCalendar();
     }).catch((error) => {
         console.error("Erreur chargement Firebase:", error);
@@ -522,7 +538,7 @@ function updateMonthYearSelectors() {
     document.getElementById('year-select').value = currentDate.getFullYear();
 }
 
-// Rendu du calendrier (identique à votre code existant)
+// Rendu du calendrier
 function renderCalendar() {
     const calendarEl = document.getElementById('calendar');
     const currentMonthEl = document.getElementById('current-month');
@@ -600,6 +616,9 @@ function createDayElement(dayNumber, isOtherMonth) {
 function displayEvents() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
+    
+    // Nettoyer les événements existants
+    document.querySelectorAll('.event').forEach(event => event.remove());
     
     events.forEach(event => {
         const eventStart = new Date(event.start);
@@ -705,6 +724,11 @@ function showEventDetails(event, element) {
 
 // SAUVEGARDE AVEC FIREBASE
 function saveEvent() {
+    if (!db) {
+        alert("Firebase non initialisé");
+        return;
+    }
+    
     const title = document.getElementById('event-title').value;
     const start = document.getElementById('event-start').value;
     const end = document.getElementById('event-end').value;
@@ -756,6 +780,11 @@ function saveEvent() {
 }
 
 function deleteEvent() {
+    if (!db) {
+        alert("Firebase non initialisé");
+        return;
+    }
+    
     if (selectedEvent && confirm('Êtes-vous sûr de vouloir supprimer cette formation ?')) {
         db.collection("formations").doc(selectedEvent.id).delete()
             .then(() => {
@@ -789,8 +818,6 @@ function formatDateForDisplay(date) {
     });
 }
     </script>
-	<!-- Scripts Firebase -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
 </body>
 </html>
