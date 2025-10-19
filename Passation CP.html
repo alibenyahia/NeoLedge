@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche de Passation Projet</title>
+    <style>
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                font-size: 12px;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .no-print {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+                margin: 0;
+                padding: 10px;
+            }
+            .signature-canvas {
+			
+                border: 1px solid #000 !important;
+                background-color: white !important;
+            }
+        }
+        
+        @media screen {
+            body {
+                background-color: #f5f5f5;
+                padding: 20px;
+                font-family: Arial, sans-serif;
+            }
+            .container {
+                background-color: white;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                margin: 0 auto;
+                max-width: 900px;
+            }
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .container {
+            padding: 25px;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+
+        }
+		.logo-container {
+			flex: 0 0 auto;
+			margin-right: 20px;
+		}
+
+		.company-logo {
+			max-width: 150px;
+			max-height: 80px;
+			object-fit: contain;
+		}
+
+		.header-content {
+			flex: 1;
+			text-align: center;
+		}
+        
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 20px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            background-color: #34495e;
+            color: white;
+            padding: 8px 12px;
+            margin: 15px 0 10px 0;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            width: 30%;
+        }
+        
+        .checkbox-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .checkbox-list li {
+            margin-bottom: 5px;
+            padding: 2px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #34495e;
+            border-radius: 3px;
+            margin-right: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .custom-checkbox.checked {
+            background-color: #34495e;
+        }
+        
+        .custom-checkbox.checked:after {
+        
+			content: "X";
+        }
+        
+        .signature-area {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+        }
+        
+        .signature-block {
+            width: 48%;
+            display: inline-block;
+            vertical-align: top;
+            margin-bottom: 30px;
+        }
+		.signature-block:first-child {
+			margin-right: 4%;
+		}
+
+		.signature-block:last-child {
+			margin-right: 0;
+		}
+        
+        .signature-container {
+            margin: 20px 0;
+        }
+        
+        .signature-canvas {
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+            cursor: crosshair;
+        }
+        
+        .signature-controls {
+            margin-top: 10px;
+        }
+        
+        .signature-controls button {
+            background-color: #34495e;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            margin-right: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .signature-controls button:hover {
+            background-color: #2c3e50;
+        }
+        
+        .signature-line {
+            border-bottom: 1px solid #333;
+            margin: 10px 0 5px 0;
+        }
+        
+        .notes-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            min-height: 100px;
+            background-color: #f8f9fa;
+        }
+        
+        .print-button {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .print-button:hover {
+            background-color: #34495e;
+        }
+        
+        .editable-field {
+            min-height: 20px;
+            padding: 2px 4px;
+            border: 1px dashed transparent;
+        }
+        
+        .editable-field:hover {
+            border-color: #ccc;
+            background-color: #f8f9fa;
+        }
+        
+        .editable-field:focus {
+            border-color: #34495e;
+            background-color: #fffacd;
+            outline: none;
+        }
+		.date-field {
+			border: none;
+			padding: 2px 4px;
+			font-family: Arial, sans-serif;
+			font-size: 14px;
+			background: transparent;
+			text-align: center;
+			display: inline-block;
+			min-width: 120px;
+		}
+
+		.date-field:focus {
+			background-color: #fffacd;
+			outline: none;
+			border-radius: 3px;
+		}
+    </style>
+</head>
+<body>
+        <div class="container">
+        <div class="header">
+            <div class="logo-container">
+				<a href="https://alibenyahia.github.io/NeoLedge"><img src="data:image/png;base64,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BgBA25hmAgAAEMnWmjhT/C4nfXuS9BtBBgBgaAgzAAAAavDer733M0m/K36nkz58kzTx3t/23RAAAJpGmAEAALAHW0hzIumL0go1HiS9995fsP0qAGCoCDMAAAD25L1/tCkcE1WhxkOPzfku6aP3fsLWqwCAoUthAdCFqpW9cbzWBzx2Ia6fNqz3eMyXphvRgnXfDQAwTFYBUUoqnXMXkrZf+ywUWseTqgVJr0I7owAAMCTOe993GwAAAAbJtlbdfp3p8HDjSdW2rktJtwQYAIBjRZgBAADQEefcO1WhxvafW9v/t3Uvabvexdq+7lkDAwCACmEGAAAAAADICguAAgAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArBBmAAAAAACArPx/u5hR608Zmd4AAAAASUVORK5CYII=" alt="Logo entreprise" class="company-logo">
+            </a></div>
+            <div class="header-content">
+                <h1>Fiche de Passation Projet (CM / CP)</h1>
+                <p><strong>Référence Projet :</strong> <span class="editable-field" contenteditable="true" data-id="reference"></span> | 
+                   <strong>Date de Passation :</strong> <input type="date" class="date-field" data-id="date-passation" value=""></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">1. Check-list documents transmis au Chef de Projet</div>
+            
+            <ul class="checkbox-list">
+                <li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="doc-contrat"></div>
+                    <span>Contrat signé (s'il existe)</span>
+                </li>
+                <li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="doc-offre"></div>
+                    <span>Offre financière détaillée retenue</span>
+                </li>
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="doc-checklist"></div>
+                    <span>Cahier des charges</span>
+                </li>
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="doc-commande"></div>
+                    <span>Bon de Commande</span>
+                </li>
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="ordre-service"></div>
+                    <span>Ordre de Service</span>
+                </li>
+
+                <li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="doc-addenda"></div>
+                    <span>Fiche de répartitions de la charge (cas d'une commande ATI)</span>
+                </li>
+            </ul>
+        </div>
+		
+		<div class="section">
+            <div class="section-title">2. Client Final</div>
+            <table>
+               
+                <tr>
+                    <th>Nom du client</th>
+                    <td><span class="editable-field" contenteditable="true" data-id="client-societe"></span></td>
+                </tr>
+                <tr>
+                    <th>Contact (Nom, Tel, Email):</th>
+                    <td><span class="editable-field" contenteditable="true" data-id="chef-projet"></span></td>
+                </tr>
+                <tr>
+                    <th>Sponsor/Décideur (Nom, Tel, Email):</th>
+                    <td><span class="editable-field" contenteditable="true" data-id="contact"></span></td>
+                </tr>
+            </table>
+        </div>
+		
+		<div class="section">
+            <div class="section-title">3. Partenaire (s'il existe)</div>
+            <table>
+               
+                <tr>
+                    <th>Nom du partenaire</th>
+                    <td><span class="editable-field" contenteditable="true" data-id="partenaire"></span></td>
+                </tr>
+                <tr>
+                    <th>Contact/Chef de projet (Nom, Tel, Email):</th>
+                    <td><span class="editable-field" contenteditable="true" data-id="chef-projet-partenaire"></span></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">4. Détails du Projet</div>
+            <table>
+               
+                <tr>
+                    <th>Commercial</th>
+                    <td><span class="editable-field" contenteditable="true" data-id="numero-BC"></span></td>
+                </tr>
+				<tr>
+                    <th>Chef de projet</th>
+                    <td><span class="editable-field" contenteditable="true" data-id="numero-BC"></span></td>
+                </tr>
+				<tr>
+                    <th>N° Bon de Commande</th>
+                    <td><span class="editable-field" contenteditable="true" data-id="numero-BC"></span></td>
+                </tr>
+				<tr>
+                    <th>Date du Bon de Commande</th>
+                    <td><input type="date" class="date-field" data-id="date-passation" value=""></td>
+                </tr>
+				<tr>
+                    <th>Date de notification</th>
+                    <td><input type="date" class="date-field" data-id="date-passation" value=""></td>
+                </tr>
+                <tr>
+                    <th>Date de démarrage</th>
+                    <td><input type="date" class="date-field" data-id="date-passation" value=""></td>
+                </tr>
+            </table>
+        </div>
+
+
+        <div class="section">
+            <div class="section-title">5. Détails des Prestations</div>
+            
+            <p><strong>A. Périmètre Fonctionnel</strong></p>
+            <p><em>Modules :</em></p>
+            <ul class="checkbox-list">
+                <li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="module-ged-base"></div>
+                    <span>GEC</span>
+                </li>
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="module-ged-base"></div>
+                    <span>GED</span>
+                </li>
+                <li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="module-collaboratif"></div>
+                    <span>Workflows Métiers BPM</span>
+                </li>
+                <li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="module-gec"></div>
+                    <span>SAE</span>
+                </li>
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="module-frc"></div>
+                    <span>GRC</span>
+                </li>
+                <li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="module-autre"></div>
+                    <span>Autre : <span class="editable-field" contenteditable="true" data-id="detail-autre">[Préciser]</span></span>
+                </li>
+            </ul>
+<p><em>Licences :</em></p>
+            <table>
+                <tr>
+                    <th>Licences Elise</th>
+                    <td contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <th>Licences Elise Flow</th>
+                    <td contenteditable="true"></td>
+                </tr>
+                <tr>
+                    <th>Licences Elise Mobile</th>
+                    <td contenteditable="true"></td>
+                </tr>
+            </table>
+
+            <p><strong>B. Périmètre Technique</strong></p>
+            <p><em>Mode d'Hébergement :</em></p>
+         <!--   <ul class="checkbox-list">
+                
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="saas"></div>
+                    <span>Cloud SAAS</span>
+                </li>
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="on-premise"></div>
+                    <span>On-Premise (Chez le client)</span>
+                </li>
+            </ul>  -->
+			<div class="form-check">
+			  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+			  <label class="form-check-label" for="flexRadioDefault1">
+				Cloud
+			  </label>
+			</div>   
+			<div class="form-check">
+			  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" >
+			  <label class="form-check-label" for="flexRadioDefault2">
+				On-Premise (Chez le client)
+			  </label>
+			</div>
+
+            <p><em>Environnements à livrer :</em></p>
+            <ul class="checkbox-list">
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="test"></div>
+                    <span>Développement</span>
+                </li>
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="preprod"></div>
+                    <span>Pré-production</span>
+                </li>
+				<li class="checkbox-item">
+                    <div class="custom-checkbox" onclick="toggleCheckbox(this)" data-id="prod"></div>
+                    <span>Production</span>
+                </li>
+            </ul>
+
+            <p><em>Intégrations techniques prévues :</em></p>
+            <div contenteditable="true"  data-text="Liste des systèmes à connecter (ERP, CRM, etc.) et niveau d'intégration" style="border:1px solid #ddd; padding:8px; min-height:40px; margin:10px 0;">
+                
+            </div>
+			
+
+        <div class="section">
+            <div class="section-title">6. Notes & Points d'Attention / Historique des Échanges</div>
+            <div class="notes-box" contenteditable="true">
+                
+            </div>
+        </div>
+            <!-- Le reste du contenu reste similaire avec l'ajout des classes editable-field et data-id -->
+
+        </div>
+
+        <div class="section">
+            <div class="section-title">7. Validation de la Passation</div>
+			<div class="signature-area">
+            <div class="signature-block">
+                <p><strong>Signature Commercial :</strong></p>
+                <p>Je soussigné certifie avoir transmis l'intégralité des informations et documents relatifs au projet au Chef de Projet désigné.</p>
+                
+                <div class="signature-container">
+                    <canvas id="signatureAgent" class="signature-canvas" width="350" height="150"></canvas>
+                    <div class="signature-controls">
+                        <button onclick="clearSignature('signatureAgent')">Effacer</button>
+                        
+                    </div>
+                </div>
+	
+                
+            </div>
+            
+            <div class="signature-block">
+                <p><strong>Signature Chef de Projet :</strong></p>
+                <p>Je soussigné accuse réception des éléments de passation pour le projet et en prends la responsabilité à compter de cette date.</p>
+                
+                <div class="signature-container">
+                    <canvas id="signatureChef" class="signature-canvas" width="350" height="150"></canvas>
+                    <div class="signature-controls">
+                        <button onclick="clearSignature('signatureChef')">Effacer</button>
+                        
+                    </div>
+                </div> 
+            </div>
+				<div class="no-print">
+					<button class="print-button" onclick="window.print()">🖨️ Imprimer la Fiche</button>
+					<button class="print-button" onclick="clearAll()">🗑️ Tout effacer</button>   
+				</div>
+			</div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion des cases à cocher
+        function toggleCheckbox(element) {
+            element.classList.toggle('checked');
+            saveFormData();
+        }
+
+        // Gestion des signatures
+        const signatures = {
+            signatureAgent: null,
+            signatureChef: null
+        };
+
+        function initializeSignatures() {
+            const canvases = ['signatureAgent', 'signatureChef'];
+            canvases.forEach(canvasId => {
+                const canvas = document.getElementById(canvasId);
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#f8f9fa';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+
+                let isDrawing = false;
+                let lastX = 0;
+                let lastY = 0;
+
+                canvas.addEventListener('mousedown', startDrawing);
+                canvas.addEventListener('mousemove', draw);
+                canvas.addEventListener('mouseup', stopDrawing);
+                canvas.addEventListener('mouseout', stopDrawing);
+
+                // Support tactile
+                canvas.addEventListener('touchstart', handleTouch);
+                canvas.addEventListener('touchmove', handleTouch);
+                canvas.addEventListener('touchend', stopDrawing);
+
+                function handleTouch(e) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('mousedown', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    });
+                    canvas.dispatchEvent(mouseEvent);
+                }
+
+                function startDrawing(e) {
+                    isDrawing = true;
+                    const rect = canvas.getBoundingClientRect();
+                    lastX = e.clientX - rect.left;
+                    lastY = e.clientY - rect.top;
+                }
+
+                function draw(e) {
+                    if (!isDrawing) return;
+                    const rect = canvas.getBoundingClientRect();
+                    const currentX = e.clientX - rect.left;
+                    const currentY = e.clientY - rect.top;
+
+                    ctx.beginPath();
+                    ctx.moveTo(lastX, lastY);
+                    ctx.lineTo(currentX, currentY);
+                    ctx.stroke();
+
+                    lastX = currentX;
+                    lastY = currentY;
+                }
+
+                function stopDrawing() {
+                    isDrawing = false;
+                    signatures[canvasId] = canvas.toDataURL();
+                }
+            });
+        }
+
+        function clearSignature(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            signatures[canvasId] = null;
+        }
+
+        function saveSignature(canvasId) {
+            signatures[canvasId] = document.getElementById(canvasId).toDataURL();
+            saveFormData();
+        }
+
+        // Sauvegarde et chargement des données
+        function saveFormData() {
+            const formData = {
+                signatures: signatures,
+                checkboxes: {},
+                fields: {}
+            };
+
+            // Sauvegarder les cases à cocher
+            document.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+                formData.checkboxes[checkbox.dataset.id] = checkbox.classList.contains('checked');
+            });
+
+            // Sauvegarder les champs éditable
+            document.querySelectorAll('.editable-field').forEach(field => {
+                formData.fields[field.dataset.id] = field.textContent;
+            });
+
+            localStorage.setItem('fichePassationData', JSON.stringify(formData));
+        }
+
+        function loadFormData() {
+            const savedData = localStorage.getItem('fichePassationData');
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+
+                // Charger les cases à cocher
+                Object.keys(formData.checkboxes).forEach(id => {
+                    const checkbox = document.querySelector(`[data-id="${id}"]`);
+                    if (checkbox && formData.checkboxes[id]) {
+                        checkbox.classList.add('checked');
+                    }
+                });
+
+                // Charger les champs éditable
+                Object.keys(formData.fields).forEach(id => {
+                    const field = document.querySelector(`[data-id="${id}"]`);
+                    if (field) {
+                        field.textContent = formData.fields[id];
+                    }
+                });
+
+                // Charger les signatures
+                if (formData.signatures) {
+                    Object.keys(formData.signatures).forEach(canvasId => {
+                        if (formData.signatures[canvasId]) {
+                            const canvas = document.getElementById(canvasId);
+                            const ctx = canvas.getContext('2d');
+                            const img = new Image();
+                            img.onload = function() {
+                                ctx.drawImage(img, 0, 0);
+                            };
+                            img.src = formData.signatures[canvasId];
+                            signatures[canvasId] = formData.signatures[canvasId];
+                        }
+                    });
+                }
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Êtes-vous sûr de vouloir tout effacer ?')) {
+                localStorage.removeItem('fichePassationData');
+                document.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+                    checkbox.classList.remove('checked');
+                });
+                document.querySelectorAll('.editable-field').forEach(field => {
+                    field.textContent = field.getAttribute('data-default') || '';
+                });
+                clearSignature('signatureAgent');
+                clearSignature('signatureChef');
+            }
+        }
+
+        // Auto-sauvegarde lors de la modification des champs
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('editable-field')) {
+                saveFormData();
+            }
+        });
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSignatures();
+            loadFormData();
+        });
+		document.querySelectorAll('.editable-field').forEach(field => {
+			formData.fields[field.dataset.id] = field.textContent;
+		});
+		document.querySelectorAll('.date-field').forEach(field => {
+			formData.fields[field.dataset.id] = field.value;
+		});
+
+		// Dans la fonction loadFormData(), ajoutez après le chargement des champs éditable :
+		document.querySelectorAll('.date-field').forEach(field => {
+			if (formData.fields[field.dataset.id]) {
+				field.value = formData.fields[field.dataset.id];
+			}
+		});
+		// Ajoutez cette fonction pour gérer les classes des dates vides
+		function updateDateFields() {
+			document.querySelectorAll('.date-field').forEach(field => {
+				if (!field.value) {
+					field.classList.add('date-empty');
+				} else {
+					field.classList.remove('date-empty');
+				}
+			});
+		}
+
+		// Appelez cette fonction lors des changements
+		document.querySelectorAll('.date-field').forEach(field => {
+			field.addEventListener('change', updateDateFields);
+		});
+
+		// Et au chargement
+		updateDateFields();
+    </script>
+</body>
+</html>
