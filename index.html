@@ -61,23 +61,28 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(4, 1fr); /* 4 colonnes égales */
+			gap: 20px;
             margin-top: 40px;
         }
 
         .card {
             background: white;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            border: none;
-            text-decoration: none;
-            color: inherit;
-            display: block;
+    border-radius: 15px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    min-height: 250px; /* Hauteur minimale pour uniformité */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
         }
 
         .card:hover {
@@ -185,7 +190,6 @@
 
 				<div>
                     <h1>Plateforme Interne</h1>
-                    <p class="subtitle">Gestion des recrutements et des formations</p>
                 </div>
             </div>
         </header>
@@ -200,22 +204,23 @@
             <a href="calendrier-formations.html" class="card card-calendar">
                 <div class="icon">📅</div>
                 <h2>Calendrier des Formations</h2>
-                <p>Planification et suivi des sessions de formation</p>
+                <p>Planification des sessions de formation</p>
             </a>
-<!--
-            <a href="#" class="card card-analytics">
-                <div class="icon">📊</div>
-                <h2>Analytics & Rapports</h2>
-                <p>Tableaux de bord et analyses des performances de recrutement et des formations</p>
+			
+
+            <a href="passation-CP.html" class="card card-analytics">
+                <div class="icon">🗒️</div>
+                <h2>Fiche de passation</h2>
+                <p>Entre Chanel Manager et chef de projet</p>
             </a>
 
-            <a href="#" class="card card-documents">
-                <div class="icon">📁</div>
-                <h2>Documents & Ressources</h2>
-                <p>Bibliothèque de documents, modèles et ressources pour les RH et formateurs</p>
+            <a href="passation-CP.html" class="card card-documents">
+                <div class="icon">📝️</div>
+                <h2>Fiche de passation</h2>
+                <p>Entre chef de projet et CSM</p>
             </a>
         </div>
-
+<!--
         <div class="stats">
             <div class="stat-card">
                 <div class="stat-number" id="candidates-count">0</div>
@@ -234,12 +239,11 @@
                 <div class="stat-label">Taux de réussite</div>
             </div>
         </div>
-
-        <footer>
-            <p>&copy; 2024 Plateforme RH - Développement des Compétences</p>
-            <p>Contact : rh@entreprise.com | Tél : +216 XX XXX XXX</p>
-        </footer>
 -->
+        <footer>
+            <p>&copy; Pôle Public - NeoLedge MEA</p>
+        </footer>
+
     </div>
 
     <script>
