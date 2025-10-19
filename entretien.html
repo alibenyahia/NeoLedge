@@ -858,7 +858,7 @@
         </section>
 
         <div class="buttons-container">
-            <button class="btn-primary" onclick="calculateScore()">
+            <button class="btn-primary" onclick="calculateScore(true)">
                 📊 Calculer le Score Final
             </button>
             <button class="btn-secondary" onclick="clearAll()">
@@ -874,186 +874,165 @@
     </div>
 
     <script>
-        function calculateScore() {
-            // Calcul des scores par compétence
-            const competences = {
-                'com': ['com1', 'com2'],
-                'eco': ['eco1'],
-                'org': ['org1', 'org2'],
-                'init': ['init1'],
-                'adap': ['adap1'],
-                'mob': ['mob1']
-            };
-            
-            let totalScore = 0;
-            let maxTotal = 0;
-            
-            // Calcul pour chaque compétence
-            for (const [comp, questions] of Object.entries(competences)) {
-                let compScore = 0;
-                let compMax = 0;
-                
-                questions.forEach(question => {
-                    const selected = document.querySelector(`input[name="${question}"]:checked`);
-                    if (selected) {
-                        compScore += parseInt(selected.value);
-                        compMax += 4;
-                    }
-                });
-                
-                // Mise à jour de l'affichage de la compétence
-                document.getElementById(`score${comp.charAt(0).toUpperCase() + comp.slice(1)}`).textContent = 
-                    `${compScore}/${compMax}`;
-                document.getElementById(`breakdown${comp.charAt(0).toUpperCase() + comp.slice(1)}`).textContent = 
-                    compScore;
-                
-                totalScore += compScore;
-                maxTotal += compMax;
+        function calculateScore(scrollToResults = false) {
+    // Calcul des scores par compétence
+    const competences = {
+        'com': ['com1', 'com2'],
+        'eco': ['eco1'],
+        'org': ['org1', 'org2'],
+        'init': ['init1'],
+        'adap': ['adap1']
+    };
+    
+    let totalScore = 0;
+    let maxTotal = 0;
+    
+    // Calcul pour chaque compétence
+    for (const [comp, questions] of Object.entries(competences)) {
+        let compScore = 0;
+        let compMax = 0;
+        
+        questions.forEach(question => {
+            const selected = document.querySelector(`input[name="${question}"]:checked`);
+            if (selected) {
+                compScore += parseInt(selected.value);
+                compMax += 4;
             }
-            
-            // Calcul du score sur 20
-            const scoreSur20 = maxTotal > 0 ? ((totalScore / maxTotal) * 20).toFixed(1) : 0;
-            document.getElementById('finalScore').textContent = scoreSur20;
-            
-            // Affichage de la section résultats
-            document.getElementById('resultsSection').classList.remove('hidden');
-            
-            // Défilement vers les résultats
-            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        function clearResponse(questionName) {
-            // Effacer la sélection des radios
-            const radios = document.querySelectorAll(`input[name="${questionName}"]`);
-            radios.forEach(radio => {
-                radio.checked = false;
-            });
-            
-            // Effacer les notes associées
-            const notesTextarea = document.getElementById(`notes${questionName.charAt(0).toUpperCase() + questionName.slice(1)}`);
-            if (notesTextarea) {
-                notesTextarea.value = '';
-            }
-            
-            // Recalculer le score
-            calculateScore();
-        }
-        
-        function clearZones() {
-            const zones = document.querySelectorAll('input[name="zones"]');
-            zones.forEach(zone => {
-                zone.checked = false;
-            });
-        }
-        
-        function clearMissions() {
-            const missions = document.querySelectorAll('input[name="missions"]');
-            missions.forEach(mission => {
-                mission.checked = false;
-            });
-        }
-        
-        function clearSection(section) {
-            const sections = {
-                'candidateInfo': {
-                    inputs: ['candidateName', 'interviewDate', 'interviewer', 'observations'],
-                    radios: []
-                },
-                'communication': {
-                    inputs: ['notesCom1', 'notesCom2'],
-                    radios: ['com1', 'com2']
-                },
-                'ecoute': {
-                    inputs: ['notesEco1'],
-                    radios: ['eco1']
-                },
-                'organisation': {
-                    inputs: ['notesOrg1', 'notesOrg2'],
-                    radios: ['org1', 'org2']
-                },
-                'initiative': {
-                    inputs: ['notesInit1'],
-                    radios: ['init1']
-                },
-                'adaptation': {
-                    inputs: ['notesAdap1'],
-                    radios: ['adap1']
-                },
-                'mobilite': {
-                    inputs: ['notesMobilite'],
-                    radios: ['mob1']
-                }
-            };
-            
-            const currentSection = sections[section];
-            
-            // Effacer les inputs
-            currentSection.inputs.forEach(inputId => {
-                const element = document.getElementById(inputId);
-                if (element) {
-                    element.value = '';
-                }
-            });
-            
-            // Effacer les radios
-            currentSection.radios.forEach(radioName => {
-                clearResponse(radioName);
-            });
-            
-            // Effacer les zones et missions si c'est la section mobilité
-            if (section === 'mobilite') {
-                clearZones();
-                clearMissions();
-            }
-            
-            // Recalculer le score
-            calculateScore();
-        }
-        
-        function clearAll() {
-            if (confirm('Êtes-vous sûr de vouloir tout effacer ? Cette action est irréversible.')) {
-                // Effacer toutes les sections
-                clearSection('candidateInfo');
-                clearSection('communication');
-                clearSection('ecoute');
-                clearSection('organisation');
-                clearSection('initiative');
-                clearSection('adaptation');
-                clearSection('mobilite');
-                clearResults();
-            }
-        }
-        
-        function clearResults() {
-            document.getElementById('finalRecommendation').value = '';
-            document.getElementById('finalNotes').value = '';
-            document.getElementById('finalScore').textContent = '0';
-            
-            // Réinitialiser les scores détaillés
-            const competences = ['Com', 'Eco', 'Org', 'Init', 'Adap', 'Mob'];
-            competences.forEach(comp => {
-                document.getElementById(`score${comp}`).textContent = '0/4';
-                document.getElementById(`breakdown${comp}`).textContent = '0';
-            });
-        }
-        
-        function printEvaluation() {
-            // S'assurer que les scores sont à jour
-            calculateScore();
-            
-            // Attendre un peu pour que le calcul soit fait
-            setTimeout(() => {
-                window.print();
-            }, 100);
-        }
-        
-        // Ajout d'un écouteur pour calcul automatique au changement de note
-        document.querySelectorAll('input[type="radio"]').forEach(radio => {
-            radio.addEventListener('change', calculateScore);
         });
         
-        // Calcul initial
-        calculateScore();
+        // Mise à jour de l'affichage de la compétence
+        document.getElementById(`score${comp.charAt(0).toUpperCase() + comp.slice(1)}`).textContent = 
+            `${compScore}/${compMax}`;
+        document.getElementById(`breakdown${comp.charAt(0).toUpperCase() + comp.slice(1)}`).textContent = 
+            compScore;
+        
+        totalScore += compScore;
+        maxTotal += compMax;
+    }
+    
+    // Calcul du score sur 20
+    const scoreSur20 = maxTotal > 0 ? ((totalScore / maxTotal) * 20).toFixed(1) : 0;
+    document.getElementById('finalScore').textContent = scoreSur20;
+    
+    // Affichage de la section résultats
+    document.getElementById('resultsSection').classList.remove('hidden');
+    
+    // Défilement vers les résultats UNIQUEMENT si demandé explicitement
+    if (scrollToResults) {
+        document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function clearResponse(questionName) {
+    // Effacer la sélection des radios
+    const radios = document.querySelectorAll(`input[name="${questionName}"]`);
+    radios.forEach(radio => {
+        radio.checked = false;
+    });
+    
+    // Effacer les notes associées
+    const notesTextarea = document.getElementById(`notes${questionName.charAt(0).toUpperCase() + questionName.slice(1)}`);
+    if (notesTextarea) {
+        notesTextarea.value = '';
+    }
+    
+    // Recalculer le score sans défilement
+    calculateScore(false);
+}
+
+function clearSection(section) {
+    const sections = {
+        'candidateInfo': {
+            inputs: ['candidateName', 'interviewDate', 'interviewer', 'observations'],
+            radios: []
+        },
+        'communication': {
+            inputs: ['notesCom1', 'notesCom2'],
+            radios: ['com1', 'com2']
+        },
+        'ecoute': {
+            inputs: ['notesEco1'],
+            radios: ['eco1']
+        },
+        'organisation': {
+            inputs: ['notesOrg1', 'notesOrg2'],
+            radios: ['org1', 'org2']
+        },
+        'initiative': {
+            inputs: ['notesInit1'],
+            radios: ['init1']
+        },
+        'adaptation': {
+            inputs: ['notesAdap1'],
+            radios: ['adap1']
+        }
+    };
+    
+    const currentSection = sections[section];
+    
+    // Effacer les inputs
+    currentSection.inputs.forEach(inputId => {
+        const element = document.getElementById(inputId);
+        if (element) {
+            element.value = '';
+        }
+    });
+    
+    // Effacer les radios
+    currentSection.radios.forEach(radioName => {
+        clearResponse(radioName);
+    });
+    
+    // Recalculer le score sans défilement
+    calculateScore(false);
+}
+
+function clearAll() {
+    if (confirm('Êtes-vous sûr de vouloir tout effacer ? Cette action est irréversible.')) {
+        // Effacer toutes les sections
+        clearSection('candidateInfo');
+        clearSection('communication');
+        clearSection('ecoute');
+        clearSection('organisation');
+        clearSection('initiative');
+        clearSection('adaptation');
+        clearResults();
+    }
+}
+
+function clearResults() {
+    document.getElementById('finalRecommendation').value = '';
+    document.getElementById('finalNotes').value = '';
+    document.getElementById('finalScore').textContent = '0';
+    
+    // Réinitialiser les scores détaillés
+    const competences = ['Com', 'Eco', 'Org', 'Init', 'Adap'];
+    competences.forEach(comp => {
+        document.getElementById(`score${comp}`).textContent = '0/4';
+        document.getElementById(`breakdown${comp}`).textContent = '0';
+    });
+}
+
+function printEvaluation() {
+    // S'assurer que les scores sont à jour
+    calculateScore(false);
+    
+    // Attendre un peu pour que le calcul soit fait
+    setTimeout(() => {
+        window.print();
+    }, 100);
+}
+
+// Ajout d'un écouteur pour calcul automatique au changement de note
+document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        calculateScore(false); // Calcul sans défilement
+    });
+});
+
+// INITIALISATION : Appel initial pour mettre à jour les scores à 0
+// Mais sans défilement automatique
+calculateScore(false);			
     </script>
 </body>
 </html>
