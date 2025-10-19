@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grille d'Entretien - Chef de Projet Junior</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #3498db;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        h3 {
+            color: #3498db;
+            margin: 20px 0 10px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .competence {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e74c3c;
+            position: relative;
+        }
+
+        .scenario {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2ecc71;
+            position: relative;
+        }
+
+        .mobility-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #f39c12;
+            position: relative;
+        }
+
+        .rating {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .rating-option {
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .rating-option input {
+            display: none;
+        }
+
+        .rating-option label {
+            display: block;
+            padding: 10px;
+            background: #ecf0f1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .rating-option input:checked + label {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+
+        .rating-option label:hover {
+            background: #bdc3c7;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #ecf0f1;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        .checkbox-item:hover {
+            background: #d5dbdb;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .notes {
+            margin-top: 15px;
+        }
+
+        .notes textarea {
+            min-height: 60px;
+        }
+
+        .score-display {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .score-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .score-item {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #219652;
+        }
+
+        .btn-secondary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #2980b9;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-print {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background: #8e44ad;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .competence-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .competence-score {
+            background: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .clear-section {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .clear-section:hover {
+            background: #c0392b;
+        }
+
+        .clear-response {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-top: 5px;
+            transition: background 0.3s;
+        }
+
+        .clear-response:hover {
+            background: #7f8c8d;
+        }
+
+        .mobility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 12pt;
+            }
+            
+            .container {
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            
+            header {
+                background: #2c3e50 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .section {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                margin-bottom: 15px !important;
+                page-break-inside: avoid;
+            }
+            
+            .competence, .scenario, .mobility-item {
+                background: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                border: 1px solid #ddd !important;
+            }
+            
+            button, .clear-section, .clear-response, .buttons-container {
+                display: none !important;
+            }
+            
+            .score-display {
+                background: #2c3e50 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .score-item {
+                background: #ecf0f1 !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .rating-option input:checked + label {
+                background: #3498db !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .checkbox-item {
+                background: #ecf0f1 !important;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .rating {
+                flex-direction: column;
+            }
+            
+            .rating-option {
+                margin: 5px 0;
+            }
+            
+            .buttons-container {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .mobility-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+			<img style="height: 50px;width: 50px;object-fit: contain;border-radius: 50%;" src="data:image/jpeg;base64,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" alt="Logo" class="logo">
+
+            <h1>Grille d'Entretien</h1>
+			<h4>Poste : Chef de Projet Junior</h4>
+        </header>
+
+        <section class="section">
+            <h2>📋 Informations du Candidat</h2>
+            
+            <div class="form-group">
+                <label for="candidateName">Nom et Prénom</label>
+                <input type="text" id="candidateName" placeholder="Entrez le nom du candidat">
+            </div>
+            <div class="form-group">
+                <label for="interviewDate">Date de l'entretien</label>
+                <input type="date" id="interviewDate">
+            </div>
+            <div class="mobility-grid">
+                    <div class="checkbox-group">
+                        
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="mission_urgence" name="missions" value="urgence">
+                            <label for="mission_urgence">✈️ Passeport</label>
+                        </div>
+						<div class="checkbox-item">
+                            <input type="checkbox" id="mission_reunion" name="missions" value="reunion">
+                            <label for="mission_reunion">🪪 Permis</label>
+                        </div>
+						<div class="checkbox-item">
+                            <input type="checkbox" id="mission_urgence" name="missions" value="urgence">
+                            <label for="mission_urgence">🚗 Motorisé</label>
+                        </div>
+                    </div>
+                </div>
+            <div class="form-group">
+                <label for="observations">Observations générales</label>
+                <textarea id="observations" placeholder="Notes globales sur le candidat..."></textarea>
+            </div>
+        </section>
+
+        <!-- SECTION COMMUNICATION -->
+        <section class="section">
+            <div class="competence-title">
+                <h2>🗣️ Communication</h2>
+                <div class="competence-score" id="scoreCom">0/4</div>
+            </div>
+            
+            <div class="competence">
+                <h3>Questions</h3>
+                <p><em>"Imaginez que vous devez annoncer un retard de livraison à un client. Comment vous y prendriez-vous ?"<br> "Quels outils de communication (e-mail, Teams, Appel) privilégiez-vous selon la situation et pourquoi ?"</em></p>
+                
+                <div class="rating">
+                    <div class="rating-option">
+                        <input type="radio" name="com1" id="com1-0" value="0">
+                        <label for="com1-0">0 - Confus</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="com1" id="com1-1" value="1">
+                        <label for="com1-1">1 - Basique</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="com1" id="com1-2" value="2">
+                        <label for="com1-2">2 - Clair</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="com1" id="com1-3" value="3">
+                        <label for="com1-3">3 - Très clair</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="com1" id="com1-4" value="4">
+                        <label for="com1-4">4 - Excellent</label>
+                    </div>
+                </div>
+                
+                
+                <div class="notes">
+                    <label>Notes :</label>
+                    <textarea id="notesCom1" placeholder="Notes sur la réponse..."></textarea>
+                </div>
+            </div>
+
+            <div class="scenario">
+                <h3>Scénario : Briefing Flou</h3>
+                <p><em>"Je suis votre client. lors d'un atelier de spécifications, je vous explique un processus métier à mettre en place dans la solution. vous trouvez que ce processus est compliqué et vous n'arrivez pas bien à le comprendre. Quels seraient vos premiers mots ou questions pour clarifier ma demande ?"</em></p>
+                
+                <div class="rating">
+                    <div class="rating-option">
+                        <input type="radio" name="com2" id="com2-0" value="0">
+                        <label for="com2-0">0 - Aucune question</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="com2" id="com2-1" value="1">
+                        <label for="com2-1">1 - Questions superficielles</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="com2" id="com2-2" value="2">
+                        <label for="com2-2">2 - Questions pertinentes</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="com2" id="com2-3" value="3">
+                        <label for="com2-3">3 - Questions structurées</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="com2" id="com2-4" value="4">
+                        <label for="com2-4">4 - Questions stratégiques</label>
+                    </div>
+                </div>
+                Objectif : Évaluer sa capacité à poser les bonnes questions et à structurer une demande floue.
+
+
+                
+                <div class="notes">
+                    <label>Notes :</label>
+                    <textarea id="notesCom2" placeholder="Notes sur la réponse..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION ÉCOUTE -->
+        <section class="section">
+            <div class="competence-title">
+                <h2>👂 Sens de l'Écoute</h2>
+                <div class="competence-score" id="scoreEco">0/4</div>
+            </div>
+            
+            <div class="competence">
+                <h3>Questions</h3>
+                <p><em>"Racontez-moi une situation où vous étiez en désaccord avec quelqu'un. Comment avez-vous géré la situation ?"<br>"Donnez-moi un exemple où vous avez dû assimiler beaucoup d'informations techniques ou complexes en peu de temps. Quelle méthode avez-vous utilisée pour tout retenir et vous assurer de votre compréhension ?"</em></p>
+                
+                <div class="rating">
+                    <div class="rating-option">
+                        <input type="radio" name="eco1" id="eco1-0" value="0">
+                        <label for="eco1-0">0 - Conflictuel</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="eco1" id="eco1-1" value="1">
+                        <label for="eco1-1">1 - Passif</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="eco1" id="eco1-2" value="2">
+                        <label for="eco1-2">2 - Écouté</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="eco1" id="eco1-3" value="3">
+                        <label for="eco1-3">3 - Compréhensif</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="eco1" id="eco1-4" value="4">
+                        <label for="eco1-4">4 - Résolution active</label>
+                    </div>
+                </div>
+                
+                
+                <div class="notes">
+                    <label>Notes :</label>
+                    <textarea id="notesEco1" placeholder="Notes sur la réponse..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION ORGANISATION -->
+        <section class="section">
+            <div class="competence-title">
+                <h2>📊 Organisation & Planification</h2>
+                <div class="competence-score" id="scoreOrg">0/4</div>
+            </div>
+            
+            <div class="competence">
+                <h3>Questions</h3>
+                <p><em>"Comment gérez-vous votre temps et vos tâches personnelles?<br> Utilisez-vous des outils particuliers (Trello, Asana, un simple to-do list) ?"</em></p>
+                
+                <div class="rating">
+                    <div class="rating-option">
+                        <input type="radio" name="org1" id="org1-0" value="0">
+                        <label for="org1-0">0 - Aucune méthode</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="org1" id="org1-1" value="1">
+                        <label for="org1-1">1 - Méthode basique</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="org1" id="org1-2" value="2">
+                        <label for="org1-2">2 - Étapes claires</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="org1" id="org1-3" value="3">
+                        <label for="org1-3">3 - Méthode structurée</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="org1" id="org1-4" value="4">
+                        <label for="org1-4">4 - Approche experte</label>
+                    </div>
+                </div>
+                
+                
+                <div class="notes">
+                    <label>Notes :</label>
+                    <textarea id="notesOrg1" placeholder="Notes sur la réponse..."></textarea>
+                </div>
+            </div>
+
+            <div class="scenario">
+                <h3>Scénario : Priorisation des Tâches</h3>
+                <p><em>"Classez ces tâches par ordre de priorité : 1. Répondre à un email client, 2. Préparer réunion de lancement, 3. Commander le déjeuner, 4. informer l'équipe technique sur un arrêt de prod"</em></p>
+                
+                <div class="rating">
+                    <div class="rating-option">
+                        <input type="radio" name="org2" id="org2-0" value="0">
+                        <label for="org2-0">0 - Illogique</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="org2" id="org2-1" value="1">
+                        <label for="org2-1">1 - Peu pertinent</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="org2" id="org2-2" value="2">
+                        <label for="org2-2">2 - Logique basique</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="org2" id="org2-3" value="3">
+                        <label for="org2-3">3 - Bonne priorisation</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="org2" id="org2-4" value="4">
+                        <label for="org2-4">4 - Excellence stratégique</label>
+                    </div>
+                </div>
+                Objectif : Voir sa logique de priorisation (Urgent/Important).
+
+
+                
+                <div class="notes">
+                    <label>Notes :</label>
+                    <textarea id="notesOrg2" placeholder="Notes sur la réponse..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION INITIATIVE -->
+        <section class="section">
+            <div class="competence-title">
+                <h2>💡 Prise d'Initiative</h2>
+                <div class="competence-score" id="scoreInit">0/4</div>
+            </div>
+            
+            <div class="scenario">
+                <h3>Scénario : Problème Inattendu</h3>
+                <p><em>"Vous gérez un projet et, une semaine avant la deadline, vous remarquez qu'une tâche risque de prendre du retard. Que faites-vous ?"</em></p>
+                
+                <div class="rating">
+                    <div class="rating-option">
+                        <input type="radio" name="init1" id="init1-0" value="0">
+                        <label for="init1-0">0 - Aucune idée</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="init1" id="init1-1" value="1">
+                        <label for="init1-1">1 - Attend les instructions</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="init1" id="init1-2" value="2">
+                        <label for="init1-2">2 - Propose une solution</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="init1" id="init1-3" value="3">
+                        <label for="init1-3">3 - Plan d'action concret</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="init1" id="init1-4" value="4">
+                        <label for="init1-4">4 - Solution innovante</label>
+                    </div>
+                </div>
+                Objectif : Évaluer son sang-froid, sa réactivité et sa capacité à proposer un plan B (redistribution des tâches, re-négociation des délais, etc.).
+
+
+                
+                <div class="notes">
+                    <label>Notes :</label>
+                    <textarea id="notesInit1" placeholder="Notes sur la réponse..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION ADAPTATION -->
+        <section class="section">
+            <div class="competence-title">
+                <h2>🔄 Adaptation</h2>
+                <div class="competence-score" id="scoreAdap">0/4</div>
+            </div>
+            
+            <div class="scenario">
+                <h3>Scénario : Changement de Priorité</h3>
+                <p><em>"Vous êtes en train de finaliser la tâche A, priorité haute, que votre manager vous a donnée. Il arrive soudainement et vous dit que la tâche B devient la priorité absolue et doit être faite immédiatement. Comment réagissez-vous et que faites-vous ?"</em></p>
+                
+                <div class="rating">
+                    <div class="rating-option">
+                        <input type="radio" name="adap1" id="adap1-0" value="0">
+                        <label for="adap1-0">0 - Résistant</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="adap1" id="adap1-1" value="1">
+                        <label for="adap1-1">1 - Confus</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="adap1" id="adap1-2" value="2">
+                        <label for="adap1-2">2 - S'adapte</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="adap1" id="adap1-3" value="3">
+                        <label for="adap1-3">3 - Gère bien</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="adap1" id="adap1-4" value="4">
+                        <label for="adap1-4">4 - Excellente adaptation</label>
+                    </div>
+                </div>
+                Objectif : Voir s'il sait gérer le changement sans paniquer et organiser son travail en conséquence.
+
+
+                
+                <div class="notes">
+                    <label>Notes :</label>
+                    <textarea id="notesAdap1" placeholder="Notes sur la réponse..."></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOUVELLE SECTION MOBILITÉ -->
+        <section class="section">
+            <div class="competence-title">
+                <h2>✈️ Mobilité & Déplacements</h2>
+                <div class="competence-score" id="scoreMob">0/4</div>
+            </div>
+            
+            <div class="mobility-item">
+                <h3>Disponibilité pour les déplacements</h3>
+                <p><em>"Ce poste nécessite des déplacements pour animer des réunions, des formations ou assurer de l'assistance chez les clients. Quelle est votre disponibilité ?"</em></p>
+                
+                <div class="rating">
+                    <div class="rating-option">
+                        <input type="radio" name="mob1" id="mob1-0" value="0">
+                        <label for="mob1-0">0 - Non mobile</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="mob1" id="mob1-1" value="1">
+                        <label for="mob1-1">1 - Très limité</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="mob1" id="mob1-2" value="2">
+                        <label for="mob1-2">2 - Tunisie seulement</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="mob1" id="mob1-3" value="3">
+                        <label for="mob1-3">3 - Afrique acceptée</label>
+                    </div>
+                    <div class="rating-option">
+                        <input type="radio" name="mob1" id="mob1-4" value="4">
+                        <label for="mob1-4">4 - Très mobile</label>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="notes">
+                <label>Notes supplémentaires sur la mobilité :</label>
+                <textarea id="notesMobilite" placeholder="Contraintes particulières, préférences, expériences passées..."></textarea>
+            </div>
+        </section>
+
+        <!-- RÉSULTATS -->
+        <section class="section" id="resultsSection">
+            <h2>📈 Résultats de l'Évaluation</h2>
+            
+            <div class="score-display">
+                Note : <span id="finalScore">0</span>/20
+            </div>
+            
+            <div class="score-breakdown">
+                <div class="score-item">
+                    <div class="score-value" id="breakdownCom">0</div>
+                    <div class="score-label">Communication</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-value" id="breakdownEco">0</div>
+                    <div class="score-label">Écoute</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-value" id="breakdownOrg">0</div>
+                    <div class="score-label">Organisation</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-value" id="breakdownInit">0</div>
+                    <div class="score-label">Initiative</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-value" id="breakdownAdap">0</div>
+                    <div class="score-label">Adaptation</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-value" id="breakdownMob">0</div>
+                    <div class="score-label">Mobilité</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="finalRecommendation">Recommandation finale</label>
+                <select id="finalRecommendation">
+                    <option value="">Sélectionnez une recommandation</option>
+                    <option value="embaucher">✅ Embaucher</option>
+                    <option value="second_entretien">🔄 Second entretien</option>
+                    <option value="reserve">📋 Liste de réserve</option>
+                    <option value="refuser">❌ Ne pas embaucher</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="finalNotes">Notes finales et points d'amélioration</label>
+                <textarea id="finalNotes" placeholder="Synthèse des forces et faiblesses..."></textarea>
+            </div>
+        </section>
+
+        <div class="buttons-container">
+            <button class="btn-primary" onclick="calculateScore()">
+                📊 Calculer le Score Final
+            </button>
+            <button class="btn-secondary" onclick="clearAll()">
+                🗑️ Tout Effacer
+            </button>
+            <button class="btn-print" onclick="printEvaluation()">
+                🖨️ Imprimer l'Évaluation
+            </button>
+            <button class="btn-danger" onclick="clearResults()">
+            ✖️ Effacer les Résultats
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function calculateScore() {
+            // Calcul des scores par compétence
+            const competences = {
+                'com': ['com1', 'com2'],
+                'eco': ['eco1'],
+                'org': ['org1', 'org2'],
+                'init': ['init1'],
+                'adap': ['adap1'],
+                'mob': ['mob1']
+            };
+            
+            let totalScore = 0;
+            let maxTotal = 0;
+            
+            // Calcul pour chaque compétence
+            for (const [comp, questions] of Object.entries(competences)) {
+                let compScore = 0;
+                let compMax = 0;
+                
+                questions.forEach(question => {
+                    const selected = document.querySelector(`input[name="${question}"]:checked`);
+                    if (selected) {
+                        compScore += parseInt(selected.value);
+                        compMax += 4;
+                    }
+                });
+                
+                // Mise à jour de l'affichage de la compétence
+                document.getElementById(`score${comp.charAt(0).toUpperCase() + comp.slice(1)}`).textContent = 
+                    `${compScore}/${compMax}`;
+                document.getElementById(`breakdown${comp.charAt(0).toUpperCase() + comp.slice(1)}`).textContent = 
+                    compScore;
+                
+                totalScore += compScore;
+                maxTotal += compMax;
+            }
+            
+            // Calcul du score sur 20
+            const scoreSur20 = maxTotal > 0 ? ((totalScore / maxTotal) * 20).toFixed(1) : 0;
+            document.getElementById('finalScore').textContent = scoreSur20;
+            
+            // Affichage de la section résultats
+            document.getElementById('resultsSection').classList.remove('hidden');
+            
+            // Défilement vers les résultats
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function clearResponse(questionName) {
+            // Effacer la sélection des radios
+            const radios = document.querySelectorAll(`input[name="${questionName}"]`);
+            radios.forEach(radio => {
+                radio.checked = false;
+            });
+            
+            // Effacer les notes associées
+            const notesTextarea = document.getElementById(`notes${questionName.charAt(0).toUpperCase() + questionName.slice(1)}`);
+            if (notesTextarea) {
+                notesTextarea.value = '';
+            }
+            
+            // Recalculer le score
+            calculateScore();
+        }
+        
+        function clearZones() {
+            const zones = document.querySelectorAll('input[name="zones"]');
+            zones.forEach(zone => {
+                zone.checked = false;
+            });
+        }
+        
+        function clearMissions() {
+            const missions = document.querySelectorAll('input[name="missions"]');
+            missions.forEach(mission => {
+                mission.checked = false;
+            });
+        }
+        
+        function clearSection(section) {
+            const sections = {
+                'candidateInfo': {
+                    inputs: ['candidateName', 'interviewDate', 'interviewer', 'observations'],
+                    radios: []
+                },
+                'communication': {
+                    inputs: ['notesCom1', 'notesCom2'],
+                    radios: ['com1', 'com2']
+                },
+                'ecoute': {
+                    inputs: ['notesEco1'],
+                    radios: ['eco1']
+                },
+                'organisation': {
+                    inputs: ['notesOrg1', 'notesOrg2'],
+                    radios: ['org1', 'org2']
+                },
+                'initiative': {
+                    inputs: ['notesInit1'],
+                    radios: ['init1']
+                },
+                'adaptation': {
+                    inputs: ['notesAdap1'],
+                    radios: ['adap1']
+                },
+                'mobilite': {
+                    inputs: ['notesMobilite'],
+                    radios: ['mob1']
+                }
+            };
+            
+            const currentSection = sections[section];
+            
+            // Effacer les inputs
+            currentSection.inputs.forEach(inputId => {
+                const element = document.getElementById(inputId);
+                if (element) {
+                    element.value = '';
+                }
+            });
+            
+            // Effacer les radios
+            currentSection.radios.forEach(radioName => {
+                clearResponse(radioName);
+            });
+            
+            // Effacer les zones et missions si c'est la section mobilité
+            if (section === 'mobilite') {
+                clearZones();
+                clearMissions();
+            }
+            
+            // Recalculer le score
+            calculateScore();
+        }
+        
+        function clearAll() {
+            if (confirm('Êtes-vous sûr de vouloir tout effacer ? Cette action est irréversible.')) {
+                // Effacer toutes les sections
+                clearSection('candidateInfo');
+                clearSection('communication');
+                clearSection('ecoute');
+                clearSection('organisation');
+                clearSection('initiative');
+                clearSection('adaptation');
+                clearSection('mobilite');
+                clearResults();
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('finalRecommendation').value = '';
+            document.getElementById('finalNotes').value = '';
+            document.getElementById('finalScore').textContent = '0';
+            
+            // Réinitialiser les scores détaillés
+            const competences = ['Com', 'Eco', 'Org', 'Init', 'Adap', 'Mob'];
+            competences.forEach(comp => {
+                document.getElementById(`score${comp}`).textContent = '0/4';
+                document.getElementById(`breakdown${comp}`).textContent = '0';
+            });
+        }
+        
+        function printEvaluation() {
+            // S'assurer que les scores sont à jour
+            calculateScore();
+            
+            // Attendre un peu pour que le calcul soit fait
+            setTimeout(() => {
+                window.print();
+            }, 100);
+        }
+        
+        // Ajout d'un écouteur pour calcul automatique au changement de note
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', calculateScore);
+        });
+        
+        // Calcul initial
+        calculateScore();
+    </script>
+</body>
+</html>
