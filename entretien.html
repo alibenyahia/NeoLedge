@@ -208,7 +208,7 @@
 
         .score-breakdown {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(5, 1fr); /* 4 colonnes égales */
             gap: 15px;
             margin-top: 20px;
         }
@@ -812,7 +812,7 @@
             <div class="score-display">
                 Note : <span id="finalScore">0</span>/20
             </div>
-          <!--  
+           
             <div class="score-breakdown">
                 <div class="score-item">
                     <div class="score-value" id="breakdownCom">0</div>
@@ -834,12 +834,9 @@
                     <div class="score-value" id="breakdownAdap">0</div>
                     <div class="score-label">Adaptation</div>
                 </div>
-                <div class="score-item">
-                    <div class="score-value" id="breakdownMob">0</div>
-                    <div class="score-label">Mobilité</div>
-                </div>
+                
             </div>
-            -->
+           
             <div class="form-group">
                 <label for="finalRecommendation">Recommandation finale</label>
                 <select id="finalRecommendation">
