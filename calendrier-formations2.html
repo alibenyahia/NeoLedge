@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendrier de Formations</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-color: #dee2e6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .month-navigation {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .month-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .month-selector select {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .current-month {
+            font-size: 1.5rem;
+            font-weight: 600;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: auto repeat(6, 120px);
+            gap: 1px;
+            background-color: var(--border-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            height: 840px;
+        }
+
+        .calendar-day {
+            background-color: white;
+            padding: 10px;
+            height: 120px;
+            position: relative;
+            transition: background-color 0.2s;
+            overflow: hidden;
+        }
+
+        .calendar-day.other-month {
+            background-color: #f8f9fa;
+            color: #aaa;
+        }
+
+        .calendar-day.today {
+            background-color: #e8f4fd;
+        }
+
+        .calendar-day-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            height: 50px;
+        }
+
+        .day-number {
+            font-weight: 600;
+            margin-bottom: 5px;
+            position: sticky;
+            top: 0;
+            background-color: inherit;
+            z-index: 1;
+        }
+
+        .events-container {
+            max-height: 85px;
+            overflow-y: auto;
+        }
+
+        .event {
+            background-color: var(--success-color);
+            color: white;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin-bottom: 3px;
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .event.owner-1 {
+            background-color: #3498db;
+        }
+        
+        .event.owner-2 {
+            background-color: #9b59b6;
+        }
+        
+        .event.owner-3 {
+            background-color: #e74c3c;
+        }
+        
+        .event.owner-4 {
+            background-color: #f39c12;
+        }
+        
+        .event-form {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-cancel {
+            background-color: #6c757d;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-delete {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+        
+        .event-details {
+            position: absolute;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: none;
+            min-width: 200px;
+        }
+        
+        .event-details h4 {
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        
+        .event-details p {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .calendar {
+                grid-template-rows: auto repeat(6, 80px);
+                height: 600px;
+            }
+            
+            .calendar-day {
+                height: 80px;
+                padding: 5px;
+            }
+            
+            .event {
+                font-size: 0.7rem;
+                padding: 2px 4px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .calendar-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .month-navigation {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+			<div style="display: flex; align-items: center; gap: 15px;">
+				<img style="height: 50px;width: 50px;object-fit: contain;border-radius: 50%;" src="data:image/jpeg;base64,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" alt="Logo" class="logo">
+				<h1 >Calendrier des Formations</h1>
+			</div>
+		</header>
+        
+        <div class="calendar-header">
+            <div class="month-navigation">
+                <button class="btn" id="prev-month">&lt;</button>
+                <div class="current-month" id="current-month">Janvier 2023</div>
+                <button class="btn" id="next-month">&gt;</button>
+            </div>
+            <div class="month-selector">
+                <select id="month-select">
+                    <option value="0">Janvier</option>
+                    <option value="1">Février</option>
+                    <option value="2">Mars</option>
+                    <option value="3">Avril</option>
+                    <option value="4">Mai</option>
+                    <option value="5">Juin</option>
+                    <option value="6">Juillet</option>
+                    <option value="7">Août</option>
+                    <option value="8">Septembre</option>
+                    <option value="9">Octobre</option>
+                    <option value="10">Novembre</option>
+                    <option value="11">Décembre</option>
+                </select>
+                <select id="year-select">
+                    <!-- Les années seront générées par JavaScript -->
+                </select>
+            </div>
+        </div>
+        
+        <div class="calendar" id="calendar">
+            <!-- Les jours de la semaine -->
+            <div class="calendar-day-header">Lundi</div>
+            <div class="calendar-day-header">Mardi</div>
+            <div class="calendar-day-header">Mercredi</div>
+            <div class="calendar-day-header">Jeudi</div>
+            <div class="calendar-day-header">Vendredi</div>
+            <div class="calendar-day-header">Samedi</div>
+            <div class="calendar-day-header">Dimanche</div>
+            
+            <!-- Les jours du mois seront générés par JavaScript -->
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #3498db;"></div>
+                <span>Ali BEN YAHIA</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #9b59b6;"></div>
+                <span>Saif SMAIRI</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #e74c3c;"></div>
+                <span>Hassen BELHASSEN</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f39c12;"></div>
+                <span>Amor SAHLI</span>
+            </div>
+        </div>
+        
+        <div class="event-form" id="event-form">
+            <h3 id="form-title">Nouvelle Formation</h3>
+            <div class="form-group">
+                <label for="event-title">Titre de la formation/action</label>
+                <input type="text" id="event-title" placeholder="Formation Administration Fonctionnelle">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="event-start">Date de début</label>
+                    <input type="date" id="event-start">
+                </div>
+                <div class="form-group">
+                    <label for="event-end">Date de fin</label>
+                    <input type="date" id="event-end">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="event-owner">Propriétaire</label>
+                <select id="event-owner">
+                    <option value="1">Ali BEN YAHIA</option>
+                    <option value="2">Saif SMAIRI</option>
+                    <option value="3">Hassen BELHASSEN</option>
+                    <option value="4">Amor SAHLI</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-delete" id="delete-event" style="display: none;">Supprimer</button>
+                <button class="btn btn-cancel" id="cancel-event">Annuler</button>
+                <button class="btn" id="save-event">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      // Configuration Firebase - REMPLACEZ AVEC VOS CLÉS !
+const firebaseConfig = {
+    apiKey: "AIzaSyCpRdQ4ShW0HxczfSn8n2BEXIxudtNqHMY",
+    authDomain: "calendrier-des-formation-2081e.firebaseapp.com",
+    projectId: "calendrier-des-formation-2081e",
+    storageBucket: "calendrier-des-formation-2081e.firebasestorage.app",
+    messagingSenderId: "444425936635",
+    appId: "1:444425936635:web:f5144565e529375f00da5e",
+    measurementId: "G-3KFHSDYR6C"
+};
+
+// Variables globales
+let currentDate = new Date();
+let events = [];
+let selectedEvent = null;
+
+// Propriétaires disponibles
+const owners = {
+    1: { name: "Ali BEN YAHIA", color: "#3498db" },
+    2: { name: "Saif SMAIRI", color: "#9b59b6" },
+    3: { name: "Hassen BELHASSEN", color: "#e74c3c" },
+    4: { name: "Amor SAHLI", color: "#f39c12" }
+};
+
+// Initialisation Firebase
+try {
+    firebase.initializeApp(firebaseConfig);
+} catch (error) {
+    console.log("Firebase déjà initialisé");
+}
+const db = firebase.firestore();
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+    loadEventsFromFirebase();
+    setupEventListeners();
+    populateYearSelect();
+});
+
+// Charger les événements depuis Firebase
+function loadEventsFromFirebase() {
+    db.collection("formations").get().then((querySnapshot) => {
+        events = [];
+        querySnapshot.forEach((doc) => {
+            events.push({ 
+                id: doc.id, 
+                ...doc.data() 
+            });
+        });
+        renderCalendar();
+    }).catch((error) => {
+        console.error("Erreur chargement Firebase:", error);
+        alert("Erreur de connexion à la base de données");
+    });
+}
+
+// Configuration des écouteurs d'événements
+function setupEventListeners() {
+    document.getElementById('prev-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        updateMonthYearSelectors();
+        renderCalendar();
+    });
+
+    document.getElementById('next-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        updateMonthYearSelectors();
+        renderCalendar();
+    });
+
+    document.getElementById('month-select').addEventListener('change', (e) => {
+        currentDate.setMonth(parseInt(e.target.value));
+        renderCalendar();
+    });
+
+    document.getElementById('year-select').addEventListener('change', (e) => {
+        currentDate.setFullYear(parseInt(e.target.value));
+        renderCalendar();
+    });
+
+    document.getElementById('save-event').addEventListener('click', saveEvent);
+    document.getElementById('cancel-event').addEventListener('click', cancelEvent);
+    document.getElementById('delete-event').addEventListener('click', deleteEvent);
+}
+
+// Remplir le sélecteur d'années
+function populateYearSelect() {
+    const yearSelect = document.getElementById('year-select');
+    const currentYear = new Date().getFullYear();
+    
+    for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        yearSelect.appendChild(option);
+    }
+    
+    updateMonthYearSelectors();
+}
+
+// Mettre à jour les sélecteurs de mois et d'année
+function updateMonthYearSelectors() {
+    document.getElementById('month-select').value = currentDate.getMonth();
+    document.getElementById('year-select').value = currentDate.getFullYear();
+}
+
+// Rendu du calendrier (identique à votre code existant)
+function renderCalendar() {
+    const calendarEl = document.getElementById('calendar');
+    const currentMonthEl = document.getElementById('current-month');
+    
+    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    currentMonthEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    
+    while (calendarEl.children.length > 7) {
+        calendarEl.removeChild(calendarEl.lastChild);
+    }
+    
+    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+    
+    const prevMonthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+    for (let i = 0; i < startingDay; i++) {
+        const dayEl = createDayElement(prevMonthLastDay - startingDay + i + 1, true);
+        calendarEl.appendChild(dayEl);
+    }
+    
+    const today = new Date();
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayEl = createDayElement(i, false);
+        
+        if (i === today.getDate() && 
+            currentDate.getMonth() === today.getMonth() && 
+            currentDate.getFullYear() === today.getFullYear()) {
+            dayEl.classList.add('today');
+        }
+        
+        calendarEl.appendChild(dayEl);
+    }
+    
+    const totalCells = 42;
+    const remainingCells = totalCells - (startingDay + daysInMonth);
+    for (let i = 1; i <= remainingCells; i++) {
+        const dayEl = createDayElement(i, true);
+        calendarEl.appendChild(dayEl);
+    }
+    
+    displayEvents();
+}
+
+function createDayElement(dayNumber, isOtherMonth) {
+    const dayEl = document.createElement('div');
+    dayEl.className = 'calendar-day';
+    if (isOtherMonth) dayEl.classList.add('other-month');
+    
+    const dayNumberEl = document.createElement('div');
+    dayNumberEl.className = 'day-number';
+    dayNumberEl.textContent = dayNumber;
+    dayEl.appendChild(dayNumberEl);
+    
+    const eventsContainer = document.createElement('div');
+    eventsContainer.className = 'events-container';
+    dayEl.appendChild(eventsContainer);
+    
+    dayEl.addEventListener('click', function(e) {
+        if (e.target.classList.contains('event')) return;
+        
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + (isOtherMonth ? 
+            (dayNumber > 15 ? -1 : 1) : 0);
+        
+        const adjustedDate = new Date(year, month, dayNumber);
+        showEventForm(adjustedDate);
+    });
+    
+    return dayEl;
+}
+
+function displayEvents() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    events.forEach(event => {
+        const eventStart = new Date(event.start);
+        const eventEnd = new Date(event.end);
+        
+        if ((eventStart.getFullYear() === year && eventStart.getMonth() === month) || 
+            (eventEnd.getFullYear() === year && eventEnd.getMonth() === month)) {
+            
+            const currentDay = new Date(eventStart);
+            while (currentDay <= eventEnd) {
+                if (currentDay.getFullYear() === year && currentDay.getMonth() === month) {
+                    const dayEls = document.querySelectorAll('.calendar-day:not(.other-month)');
+                    const dayIndex = currentDay.getDate() - 1;
+                    
+                    if (dayEls[dayIndex]) {
+                        const eventsContainer = dayEls[dayIndex].querySelector('.events-container');
+                        if (eventsContainer) {
+                            const eventEl = document.createElement('div');
+                            eventEl.className = `event owner-${event.owner}`;
+                            eventEl.textContent = event.title;
+                            eventEl.dataset.eventId = event.id;
+                            
+                            eventEl.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                showEventDetails(event, eventEl);
+                            });
+                            
+                            eventsContainer.appendChild(eventEl);
+                        }
+                    }
+                }
+                currentDay.setDate(currentDay.getDate() + 1);
+            }
+        }
+    });
+}
+
+function showEventForm(date, event = null) {
+    const form = document.getElementById('event-form');
+    const formTitle = document.getElementById('form-title');
+    const deleteBtn = document.getElementById('delete-event');
+    
+    if (event) {
+        formTitle.textContent = "Modifier la formation";
+        document.getElementById('event-title').value = event.title;
+        document.getElementById('event-start').value = formatDateForInput(new Date(event.start));
+        document.getElementById('event-end').value = formatDateForInput(new Date(event.end));
+        document.getElementById('event-owner').value = event.owner;
+        deleteBtn.style.display = 'block';
+        selectedEvent = event;
+    } else {
+        formTitle.textContent = "Nouvelle formation";
+        document.getElementById('event-title').value = '';
+        document.getElementById('event-start').value = formatDateForInput(date);
+        document.getElementById('event-end').value = formatDateForInput(date);
+        document.getElementById('event-owner').value = '1';
+        deleteBtn.style.display = 'none';
+        selectedEvent = null;
+    }
+    
+    form.style.display = 'block';
+    form.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showEventDetails(event, element) {
+    const existingDetails = document.querySelector('.event-details');
+    if (existingDetails) {
+        existingDetails.remove();
+    }
+    
+    const detailsEl = document.createElement('div');
+    detailsEl.className = 'event-details';
+    
+    const rect = element.getBoundingClientRect();
+    detailsEl.style.top = `${rect.bottom + window.scrollY}px`;
+    detailsEl.style.left = `${rect.left + window.scrollX}px`;
+    
+    detailsEl.innerHTML = `
+        <h4>${event.title}</h4>
+        <p><strong>Début:</strong> ${formatDateForDisplay(new Date(event.start))}</p>
+        <p><strong>Fin:</strong> ${formatDateForDisplay(new Date(event.end))}</p>
+        <p><strong>Propriétaire:</strong> ${owners[event.owner].name}</p>
+        <button class="btn" id="edit-event" style="margin-top: 10px;">Modifier</button>
+    `;
+    
+    document.body.appendChild(detailsEl);
+    detailsEl.style.display = 'block';
+    
+    document.getElementById('edit-event').addEventListener('click', function() {
+        detailsEl.remove();
+        showEventForm(null, event);
+    });
+    
+    setTimeout(() => {
+        document.addEventListener('click', function closeDetails(e) {
+            if (!detailsEl.contains(e.target) && e.target !== element) {
+                detailsEl.remove();
+                document.removeEventListener('click', closeDetails);
+            }
+        });
+    }, 100);
+}
+
+// SAUVEGARDE AVEC FIREBASE
+function saveEvent() {
+    const title = document.getElementById('event-title').value;
+    const start = document.getElementById('event-start').value;
+    const end = document.getElementById('event-end').value;
+    const owner = document.getElementById('event-owner').value;
+    
+    if (!title || !start || !end) {
+        alert('Veuillez remplir tous les champs obligatoires.');
+        return;
+    }
+    
+    if (new Date(start) > new Date(end)) {
+        alert('La date de fin ne peut pas être antérieure à la date de début.');
+        return;
+    }
+    
+    const eventData = {
+        title: title,
+        start: start,
+        end: end,
+        owner: parseInt(owner),
+        lastUpdate: new Date().toISOString()
+    };
+    
+    if (selectedEvent) {
+        // Mise à jour
+        db.collection("formations").doc(selectedEvent.id).update(eventData)
+            .then(() => {
+                console.log("Formation mise à jour avec succès");
+                cancelEvent();
+                loadEventsFromFirebase();
+            })
+            .catch((error) => {
+                console.error("Erreur mise à jour:", error);
+                alert("Erreur lors de la mise à jour");
+            });
+    } else {
+        // Création
+        db.collection("formations").add(eventData)
+            .then(() => {
+                console.log("Nouvelle formation créée avec succès");
+                cancelEvent();
+                loadEventsFromFirebase();
+            })
+            .catch((error) => {
+                console.error("Erreur création:", error);
+                alert("Erreur lors de la création");
+            });
+    }
+}
+
+function deleteEvent() {
+    if (selectedEvent && confirm('Êtes-vous sûr de vouloir supprimer cette formation ?')) {
+        db.collection("formations").doc(selectedEvent.id).delete()
+            .then(() => {
+                console.log("Formation supprimée avec succès");
+                cancelEvent();
+                loadEventsFromFirebase();
+            })
+            .catch((error) => {
+                console.error("Erreur suppression:", error);
+                alert("Erreur lors de la suppression");
+            });
+    }
+}
+
+function cancelEvent() {
+    document.getElementById('event-form').style.display = 'none';
+    selectedEvent = null;
+}
+
+// Fonctions utilitaires
+function formatDateForInput(date) {
+    return date.toISOString().split('T')[0];
+}
+
+function formatDateForDisplay(date) {
+    return date.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+    </script>
+	<!-- Scripts Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</body>
+</html>
