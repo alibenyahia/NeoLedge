@@ -322,6 +322,9 @@
 				<h1 >Calendrier des Formations</h1>
 			</div>
 		</header>
+			<!-- Scripts Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
         
         <div class="calendar-header">
             <div class="month-navigation">
@@ -416,352 +419,405 @@
     </div>
 
     <script>
-        // Variables globales
-        let currentDate = new Date();
-        let events = JSON.parse(localStorage.getItem('calendarEvents')) || [];
-        let selectedEvent = null;
+      // Configuration Firebase - REMPLACEZ AVEC VOS CLÉS !
+const firebaseConfig = {
+    apiKey: "AIzaSyCpRdQ4ShW0HxczfSn8n2BEXIxudtNqHMY",
+    authDomain: "calendrier-des-formation-2081e.firebaseapp.com",
+    projectId: "calendrier-des-formation-2081e",
+    storageBucket: "calendrier-des-formation-2081e.firebasestorage.app",
+    messagingSenderId: "444425936635",
+    appId: "1:444425936635:web:f5144565e529375f00da5e",
+    measurementId: "G-3KFHSDYR6C"
+};
 
-        // Propriétaires disponibles
-        const owners = {
-            1: { name: "Ali BEN YAHIA", color: "#3498db" },
-            2: { name: "Saif SMAIRI", color: "#9b59b6" },
-            3: { name: "Hassen BELHASSEN", color: "#e74c3c" },
-            4: { name: "Amor SAHLI", color: "#f39c12" }
-        };
+// Variables globales
+let currentDate = new Date();
+let events = [];
+let selectedEvent = null;
+let db; // Déclarer db comme variable globale
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            renderCalendar();
-            setupEventListeners();
-            populateYearSelect();
+// Propriétaires disponibles
+const owners = {
+    1: { name: "Ali BEN YAHIA", color: "#3498db" },
+    2: { name: "Saif SMAIRI", color: "#9b59b6" },
+    3: { name: "Hassen BELHASSEN", color: "#e74c3c" },
+    4: { name: "Amor SAHLI", color: "#f39c12" }
+};
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser Firebase
+    try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        console.log("Firebase initialisé avec succès");
+        loadEventsFromFirebase();
+    } catch (error) {
+        console.error("Erreur initialisation Firebase:", error);
+        alert("Erreur de connexion à Firebase. Vérifiez la console.");
+    }
+    
+    setupEventListeners();
+    populateYearSelect();
+});
+
+// Charger les événements depuis Firebase
+function loadEventsFromFirebase() {
+    if (!db) {
+        console.error("Firebase non initialisé");
+        return;
+    }
+    
+    db.collection("formations").get().then((querySnapshot) => {
+        events = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            events.push({ 
+                id: doc.id, 
+                title: data.title,
+                start: data.start,
+                end: data.end,
+                owner: data.owner
+            });
         });
+        console.log(`${events.length} formations chargées`);
+        renderCalendar();
+    }).catch((error) => {
+        console.error("Erreur chargement Firebase:", error);
+        alert("Erreur de connexion à la base de données");
+    });
+}
 
-        // Configuration des écouteurs d'événements
-        function setupEventListeners() {
-            document.getElementById('prev-month').addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() - 1);
-                updateMonthYearSelectors();
-                renderCalendar();
-            });
+// Configuration des écouteurs d'événements
+function setupEventListeners() {
+    document.getElementById('prev-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        updateMonthYearSelectors();
+        renderCalendar();
+    });
 
-            document.getElementById('next-month').addEventListener('click', () => {
-                currentDate.setMonth(currentDate.getMonth() + 1);
-                updateMonthYearSelectors();
-                renderCalendar();
-            });
+    document.getElementById('next-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        updateMonthYearSelectors();
+        renderCalendar();
+    });
 
-            document.getElementById('month-select').addEventListener('change', (e) => {
-                currentDate.setMonth(parseInt(e.target.value));
-                renderCalendar();
-            });
+    document.getElementById('month-select').addEventListener('change', (e) => {
+        currentDate.setMonth(parseInt(e.target.value));
+        renderCalendar();
+    });
 
-            document.getElementById('year-select').addEventListener('change', (e) => {
-                currentDate.setFullYear(parseInt(e.target.value));
-                renderCalendar();
-            });
+    document.getElementById('year-select').addEventListener('change', (e) => {
+        currentDate.setFullYear(parseInt(e.target.value));
+        renderCalendar();
+    });
 
-            document.getElementById('save-event').addEventListener('click', saveEvent);
-            document.getElementById('cancel-event').addEventListener('click', cancelEvent);
-            document.getElementById('delete-event').addEventListener('click', deleteEvent);
+    document.getElementById('save-event').addEventListener('click', saveEvent);
+    document.getElementById('cancel-event').addEventListener('click', cancelEvent);
+    document.getElementById('delete-event').addEventListener('click', deleteEvent);
+}
+
+// Remplir le sélecteur d'années
+function populateYearSelect() {
+    const yearSelect = document.getElementById('year-select');
+    const currentYear = new Date().getFullYear();
+    
+    for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        yearSelect.appendChild(option);
+    }
+    
+    updateMonthYearSelectors();
+}
+
+// Mettre à jour les sélecteurs de mois et d'année
+function updateMonthYearSelectors() {
+    document.getElementById('month-select').value = currentDate.getMonth();
+    document.getElementById('year-select').value = currentDate.getFullYear();
+}
+
+// Rendu du calendrier
+function renderCalendar() {
+    const calendarEl = document.getElementById('calendar');
+    const currentMonthEl = document.getElementById('current-month');
+    
+    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    currentMonthEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+    
+    while (calendarEl.children.length > 7) {
+        calendarEl.removeChild(calendarEl.lastChild);
+    }
+    
+    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+    
+    const prevMonthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+    for (let i = 0; i < startingDay; i++) {
+        const dayEl = createDayElement(prevMonthLastDay - startingDay + i + 1, true);
+        calendarEl.appendChild(dayEl);
+    }
+    
+    const today = new Date();
+    for (let i = 1; i <= daysInMonth; i++) {
+        const dayEl = createDayElement(i, false);
+        
+        if (i === today.getDate() && 
+            currentDate.getMonth() === today.getMonth() && 
+            currentDate.getFullYear() === today.getFullYear()) {
+            dayEl.classList.add('today');
         }
+        
+        calendarEl.appendChild(dayEl);
+    }
+    
+    const totalCells = 42;
+    const remainingCells = totalCells - (startingDay + daysInMonth);
+    for (let i = 1; i <= remainingCells; i++) {
+        const dayEl = createDayElement(i, true);
+        calendarEl.appendChild(dayEl);
+    }
+    
+    displayEvents();
+}
 
-        // Remplir le sélecteur d'années
-        function populateYearSelect() {
-            const yearSelect = document.getElementById('year-select');
-            const currentYear = new Date().getFullYear();
-            
-            for (let i = currentYear - 5; i <= currentYear + 5; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i;
-                yearSelect.appendChild(option);
-            }
-            
-            updateMonthYearSelectors();
-        }
+function createDayElement(dayNumber, isOtherMonth) {
+    const dayEl = document.createElement('div');
+    dayEl.className = 'calendar-day';
+    if (isOtherMonth) dayEl.classList.add('other-month');
+    
+    const dayNumberEl = document.createElement('div');
+    dayNumberEl.className = 'day-number';
+    dayNumberEl.textContent = dayNumber;
+    dayEl.appendChild(dayNumberEl);
+    
+    const eventsContainer = document.createElement('div');
+    eventsContainer.className = 'events-container';
+    dayEl.appendChild(eventsContainer);
+    
+    dayEl.addEventListener('click', function(e) {
+        if (e.target.classList.contains('event')) return;
+        
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth() + (isOtherMonth ? 
+            (dayNumber > 15 ? -1 : 1) : 0);
+        
+        const adjustedDate = new Date(year, month, dayNumber);
+        showEventForm(adjustedDate);
+    });
+    
+    return dayEl;
+}
 
-        // Mettre à jour les sélecteurs de mois et d'année
-        function updateMonthYearSelectors() {
-            document.getElementById('month-select').value = currentDate.getMonth();
-            document.getElementById('year-select').value = currentDate.getFullYear();
-        }
-
-        // Rendu du calendrier
-        function renderCalendar() {
-            const calendarEl = document.getElementById('calendar');
-            const currentMonthEl = document.getElementById('current-month');
+function displayEvents() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    // Nettoyer les événements existants
+    document.querySelectorAll('.event').forEach(event => event.remove());
+    
+    events.forEach(event => {
+        const eventStart = new Date(event.start);
+        const eventEnd = new Date(event.end);
+        
+        if ((eventStart.getFullYear() === year && eventStart.getMonth() === month) || 
+            (eventEnd.getFullYear() === year && eventEnd.getMonth() === month)) {
             
-            // Mise à jour du mois en cours
-            const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-                "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-            currentMonthEl.textContent = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
-            
-            // Nettoyage des jours existants (garder les en-têtes)
-            while (calendarEl.children.length > 7) {
-                calendarEl.removeChild(calendarEl.lastChild);
-            }
-            
-            // Calcul des jours du mois
-            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-            const daysInMonth = lastDay.getDate();
-            const startingDay = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1; // Ajustement pour lundi premier
-            
-            // Ajout des jours du mois précédent
-            const prevMonthLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
-            for (let i = 0; i < startingDay; i++) {
-                const dayEl = createDayElement(prevMonthLastDay - startingDay + i + 1, true);
-                calendarEl.appendChild(dayEl);
-            }
-            
-            // Ajout des jours du mois en cours
-            const today = new Date();
-            for (let i = 1; i <= daysInMonth; i++) {
-                const dayEl = createDayElement(i, false);
-                
-                // Marquer le jour actuel
-                if (i === today.getDate() && 
-                    currentDate.getMonth() === today.getMonth() && 
-                    currentDate.getFullYear() === today.getFullYear()) {
-                    dayEl.classList.add('today');
-                }
-                
-                calendarEl.appendChild(dayEl);
-            }
-            
-            // Ajout des jours du mois suivant
-            const totalCells = 42; // 6 semaines * 7 jours
-            const remainingCells = totalCells - (startingDay + daysInMonth);
-            for (let i = 1; i <= remainingCells; i++) {
-                const dayEl = createDayElement(i, true);
-                calendarEl.appendChild(dayEl);
-            }
-            
-            // Affichage des événements
-            displayEvents();
-        }
-
-        // Création d'un élément jour
-        function createDayElement(dayNumber, isOtherMonth) {
-            const dayEl = document.createElement('div');
-            dayEl.className = 'calendar-day';
-            if (isOtherMonth) dayEl.classList.add('other-month');
-            
-            const dayNumberEl = document.createElement('div');
-            dayNumberEl.className = 'day-number';
-            dayNumberEl.textContent = dayNumber;
-            dayEl.appendChild(dayNumberEl);
-            
-            const eventsContainer = document.createElement('div');
-            eventsContainer.className = 'events-container';
-            dayEl.appendChild(eventsContainer);
-            
-            // Ajouter un écouteur d'événement pour créer une formation
-            dayEl.addEventListener('click', function(e) {
-                if (e.target.classList.contains('event')) return;
-                
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth() + (isOtherMonth ? 
-                    (dayNumber > 15 ? -1 : 1) : 0);
-                
-                // Ajustement de l'année si nécessaire
-                const adjustedDate = new Date(year, month, dayNumber);
-                
-                showEventForm(adjustedDate);
-            });
-            
-            return dayEl;
-        }
-
-        // Affichage des événements dans le calendrier
-        function displayEvents() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            
-            events.forEach(event => {
-                const eventStart = new Date(event.start);
-                const eventEnd = new Date(event.end);
-                
-                // Vérifier si l'événement est dans le mois affiché
-                if ((eventStart.getFullYear() === year && eventStart.getMonth() === month) || 
-                    (eventEnd.getFullYear() === year && eventEnd.getMonth() === month)) {
+            const currentDay = new Date(eventStart);
+            while (currentDay <= eventEnd) {
+                if (currentDay.getFullYear() === year && currentDay.getMonth() === month) {
+                    const dayEls = document.querySelectorAll('.calendar-day:not(.other-month)');
+                    const dayIndex = currentDay.getDate() - 1;
                     
-                    // Ajouter l'événement à chaque jour concerné
-                    const currentDay = new Date(eventStart);
-                    while (currentDay <= eventEnd) {
-                        if (currentDay.getFullYear() === year && currentDay.getMonth() === month) {
-                            const dayEls = document.querySelectorAll('.calendar-day:not(.other-month)');
-                            const dayIndex = currentDay.getDate() - 1;
+                    if (dayEls[dayIndex]) {
+                        const eventsContainer = dayEls[dayIndex].querySelector('.events-container');
+                        if (eventsContainer) {
+                            const eventEl = document.createElement('div');
+                            eventEl.className = `event owner-${event.owner}`;
+                            eventEl.textContent = event.title;
+                            eventEl.dataset.eventId = event.id;
                             
-                            if (dayEls[dayIndex]) {
-                                const eventsContainer = dayEls[dayIndex].querySelector('.events-container');
-                                if (eventsContainer) {
-                                    const eventEl = document.createElement('div');
-                                    eventEl.className = `event owner-${event.owner}`;
-                                    eventEl.textContent = event.title;
-                                    eventEl.dataset.eventId = event.id;
-                                    
-                                    // Ajouter un écouteur pour afficher les détails
-                                    eventEl.addEventListener('click', function(e) {
-                                        e.stopPropagation();
-                                        showEventDetails(event, eventEl);
-                                    });
-                                    
-                                    eventsContainer.appendChild(eventEl);
-                                }
-                            }
+                            eventEl.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                showEventDetails(event, eventEl);
+                            });
+                            
+                            eventsContainer.appendChild(eventEl);
                         }
-                        currentDay.setDate(currentDay.getDate() + 1);
                     }
                 }
-            });
-        }
-
-        // Affichage du formulaire d'événement
-        function showEventForm(date, event = null) {
-            const form = document.getElementById('event-form');
-            const formTitle = document.getElementById('form-title');
-            const deleteBtn = document.getElementById('delete-event');
-            
-            if (event) {
-                // Mode édition
-                formTitle.textContent = "Modifier la formation";
-                document.getElementById('event-title').value = event.title;
-                document.getElementById('event-start').value = formatDateForInput(new Date(event.start));
-                document.getElementById('event-end').value = formatDateForInput(new Date(event.end));
-                document.getElementById('event-owner').value = event.owner;
-                deleteBtn.style.display = 'block';
-                selectedEvent = event;
-            } else {
-                // Mode création
-                formTitle.textContent = "Nouvelle formation";
-                document.getElementById('event-title').value = '';
-                document.getElementById('event-start').value = formatDateForInput(date);
-                document.getElementById('event-end').value = formatDateForInput(date);
-                document.getElementById('event-owner').value = '1';
-                deleteBtn.style.display = 'none';
-                selectedEvent = null;
+                currentDay.setDate(currentDay.getDate() + 1);
             }
-            
-            form.style.display = 'block';
-            form.scrollIntoView({ behavior: 'smooth' });
         }
+    });
+}
 
-        // Affichage des détails d'un événement
-        function showEventDetails(event, element) {
-            // Supprimer les détails existants
-            const existingDetails = document.querySelector('.event-details');
-            if (existingDetails) {
-                existingDetails.remove();
-            }
-            
-            const detailsEl = document.createElement('div');
-            detailsEl.className = 'event-details';
-            
-            const rect = element.getBoundingClientRect();
-            detailsEl.style.top = `${rect.bottom + window.scrollY}px`;
-            detailsEl.style.left = `${rect.left + window.scrollX}px`;
-            
-            detailsEl.innerHTML = `
-                <h4>${event.title}</h4>
-                <p><strong>Début:</strong> ${formatDateForDisplay(new Date(event.start))}</p>
-                <p><strong>Fin:</strong> ${formatDateForDisplay(new Date(event.end))}</p>
-                <p><strong>Propriétaire:</strong> ${owners[event.owner].name}</p>
-                <button class="btn" id="edit-event" style="margin-top: 10px;">Modifier</button>
-            `;
-            
-            document.body.appendChild(detailsEl);
-            detailsEl.style.display = 'block';
-            
-            // Écouteur pour le bouton de modification
-            document.getElementById('edit-event').addEventListener('click', function() {
+function showEventForm(date, event = null) {
+    const form = document.getElementById('event-form');
+    const formTitle = document.getElementById('form-title');
+    const deleteBtn = document.getElementById('delete-event');
+    
+    if (event) {
+        formTitle.textContent = "Modifier la formation";
+        document.getElementById('event-title').value = event.title;
+        document.getElementById('event-start').value = formatDateForInput(new Date(event.start));
+        document.getElementById('event-end').value = formatDateForInput(new Date(event.end));
+        document.getElementById('event-owner').value = event.owner;
+        deleteBtn.style.display = 'block';
+        selectedEvent = event;
+    } else {
+        formTitle.textContent = "Nouvelle formation";
+        document.getElementById('event-title').value = '';
+        document.getElementById('event-start').value = formatDateForInput(date);
+        document.getElementById('event-end').value = formatDateForInput(date);
+        document.getElementById('event-owner').value = '1';
+        deleteBtn.style.display = 'none';
+        selectedEvent = null;
+    }
+    
+    form.style.display = 'block';
+    form.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showEventDetails(event, element) {
+    const existingDetails = document.querySelector('.event-details');
+    if (existingDetails) {
+        existingDetails.remove();
+    }
+    
+    const detailsEl = document.createElement('div');
+    detailsEl.className = 'event-details';
+    
+    const rect = element.getBoundingClientRect();
+    detailsEl.style.top = `${rect.bottom + window.scrollY}px`;
+    detailsEl.style.left = `${rect.left + window.scrollX}px`;
+    
+    detailsEl.innerHTML = `
+        <h4>${event.title}</h4>
+        <p><strong>Début:</strong> ${formatDateForDisplay(new Date(event.start))}</p>
+        <p><strong>Fin:</strong> ${formatDateForDisplay(new Date(event.end))}</p>
+        <p><strong>Propriétaire:</strong> ${owners[event.owner].name}</p>
+        <button class="btn" id="edit-event" style="margin-top: 10px;">Modifier</button>
+    `;
+    
+    document.body.appendChild(detailsEl);
+    detailsEl.style.display = 'block';
+    
+    document.getElementById('edit-event').addEventListener('click', function() {
+        detailsEl.remove();
+        showEventForm(null, event);
+    });
+    
+    setTimeout(() => {
+        document.addEventListener('click', function closeDetails(e) {
+            if (!detailsEl.contains(e.target) && e.target !== element) {
                 detailsEl.remove();
-                showEventForm(null, event);
-            });
-            
-            // Fermer les détails en cliquant ailleurs
-            setTimeout(() => {
-                document.addEventListener('click', function closeDetails(e) {
-                    if (!detailsEl.contains(e.target) && e.target !== element) {
-                        detailsEl.remove();
-                        document.removeEventListener('click', closeDetails);
-                    }
-                });
-            }, 100);
-        }
-
-        // Sauvegarde d'un événement
-        function saveEvent() {
-            const title = document.getElementById('event-title').value;
-            const start = document.getElementById('event-start').value;
-            const end = document.getElementById('event-end').value;
-            const owner = document.getElementById('event-owner').value;
-            
-            if (!title || !start || !end) {
-                alert('Veuillez remplir tous les champs obligatoires.');
-                return;
+                document.removeEventListener('click', closeDetails);
             }
-            
-            if (new Date(start) > new Date(end)) {
-                alert('La date de fin ne peut pas être antérieure à la date de début.');
-                return;
-            }
-            
-            if (selectedEvent) {
-                // Mise à jour d'un événement existant
-                selectedEvent.title = title;
-                selectedEvent.start = start;
-                selectedEvent.end = end;
-                selectedEvent.owner = owner;
-            } else {
-                // Création d'un nouvel événement
-                const newEvent = {
-                    id: Date.now().toString(),
-                    title,
-                    start,
-                    end,
-                    owner
-                };
-                events.push(newEvent);
-            }
-            
-            // Sauvegarde dans le localStorage
-            localStorage.setItem('calendarEvents', JSON.stringify(events));
-            
-            // Réinitialisation de l'interface
-            cancelEvent();
-            renderCalendar();
-        }
+        });
+    }, 100);
+}
 
-        // Annulation de la création/modification
-        function cancelEvent() {
-            document.getElementById('event-form').style.display = 'none';
-            selectedEvent = null;
-        }
-
-        // Suppression d'un événement
-        function deleteEvent() {
-            if (selectedEvent && confirm('Êtes-vous sûr de vouloir supprimer cette formation ?')) {
-                events = events.filter(event => event.id !== selectedEvent.id);
-                localStorage.setItem('calendarEvents', JSON.stringify(events));
+// SAUVEGARDE AVEC FIREBASE
+function saveEvent() {
+    if (!db) {
+        alert("Firebase non initialisé");
+        return;
+    }
+    
+    const title = document.getElementById('event-title').value;
+    const start = document.getElementById('event-start').value;
+    const end = document.getElementById('event-end').value;
+    const owner = document.getElementById('event-owner').value;
+    
+    if (!title || !start || !end) {
+        alert('Veuillez remplir tous les champs obligatoires.');
+        return;
+    }
+    
+    if (new Date(start) > new Date(end)) {
+        alert('La date de fin ne peut pas être antérieure à la date de début.');
+        return;
+    }
+    
+    const eventData = {
+        title: title,
+        start: start,
+        end: end,
+        owner: parseInt(owner),
+        lastUpdate: new Date().toISOString()
+    };
+    
+    if (selectedEvent) {
+        // Mise à jour
+        db.collection("formations").doc(selectedEvent.id).update(eventData)
+            .then(() => {
+                console.log("Formation mise à jour avec succès");
                 cancelEvent();
-                renderCalendar();
-            }
-        }
-
-        // Fonctions utilitaires
-        function formatDateForInput(date) {
-            return date.toISOString().split('T')[0];
-        }
-
-        function formatDateForDisplay(date) {
-            return date.toLocaleDateString('fr-FR', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+                loadEventsFromFirebase();
+            })
+            .catch((error) => {
+                console.error("Erreur mise à jour:", error);
+                alert("Erreur lors de la mise à jour");
             });
-        }
+    } else {
+        // Création
+        db.collection("formations").add(eventData)
+            .then(() => {
+                console.log("Nouvelle formation créée avec succès");
+                cancelEvent();
+                loadEventsFromFirebase();
+            })
+            .catch((error) => {
+                console.error("Erreur création:", error);
+                alert("Erreur lors de la création");
+            });
+    }
+}
+
+function deleteEvent() {
+    if (!db) {
+        alert("Firebase non initialisé");
+        return;
+    }
+    
+    if (selectedEvent && confirm('Êtes-vous sûr de vouloir supprimer cette formation ?')) {
+        db.collection("formations").doc(selectedEvent.id).delete()
+            .then(() => {
+                console.log("Formation supprimée avec succès");
+                cancelEvent();
+                loadEventsFromFirebase();
+            })
+            .catch((error) => {
+                console.error("Erreur suppression:", error);
+                alert("Erreur lors de la suppression");
+            });
+    }
+}
+
+function cancelEvent() {
+    document.getElementById('event-form').style.display = 'none';
+    selectedEvent = null;
+}
+
+// Fonctions utilitaires
+function formatDateForInput(date) {
+    return date.toISOString().split('T')[0];
+}
+
+function formatDateForDisplay(date) {
+    return date.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
     </script>
+
 </body>
 </html>
